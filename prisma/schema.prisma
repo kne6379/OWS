@@ -14,27 +14,27 @@ datasource db {
 }
 
 model User {
-  userId       Int      @id @default(autoincrement()) @map("userId")
+  userId       Int      @id @default(autoincrement()) @map("user_id")
   email        String   @unique @map("email")
   password     String   @map("password")
-  nickName     String   @unique @map("nickName")
+  nickName     String   @unique @map("nick_name")
   role         UserRole @default(COMMON) @map("role")
-  refreshToken String   @map("refreshToken")
-  createdAt    DateTime @default(now()) @map("createdAt")
-  updatedAt    DateTime @updatedAt @map("updatedAt")
+  refreshToken String   @map("refresh_token")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   profile Profile?
   feed    Feed[]
   comment Comment[]
 
-  @@map("Users")
+  @@map("users")
 }
 
 model Profile {
-  profileId       Int      @id @default(autoincrement()) @map("profileId")
-  userId          Int      @unique @map("userId")
-  showLog         Boolean  @map("showLog")
-  nickName        String   @map("nickName")
+  profileId       Int      @id @default(autoincrement()) @map("profile_id")
+  userId          Int      @unique @map("user_id")
+  showLog         Boolean  @map("show_log")
+  nickName        String   @map("nick_name")
   introduce       String?  @map("introduce")
   profile_img_url String?  @map("profile_img_url")
   maxweight       Int?     @map("maxweight")
@@ -42,57 +42,57 @@ model Profile {
   height          Float?   @map("height")
   muscleweight    Float?   @map("muscleweight")
   fat             Float?   @map("fat")
-  metabolic       BigInt?  @map("metabolic")
-  createdAt       DateTime @default(now()) @map("createdAt")
-  updatedAt       DateTime @updatedAt @map("updatedAt")
+  metabolic       Int?     @map("metabolic")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   user User  @relation(fields: [userId], references: [userId])
   log  Log[]
 
-  @@map("Profile")
+  @@map("profile")
 }
 
 model Feed {
-  feedId       Int      @id @default(autoincrement()) @map("feedId")
-  userId       Int      @map("userId")
+  feedId       Int      @id @default(autoincrement()) @map("feed_id")
+  userId       Int      @map("user_id")
   title        String   @map("title")
   feed_img_url String   @map("feed_img_url")
-  nickName     String   @map("nickName")
+  nickName     String   @map("nick_name")
   content      String   @map("content") @db.Text
-  createdAt    DateTime @default(now()) @map("createdAt")
-  updatedAt    DateTime @updatedAt @map("updatedAt")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   user    User      @relation(fields: [userId], references: [userId])
   comment Comment[]
 
-  @@map("Feeds")
+  @@map("feeds")
 }
 
 model Comment {
-  commentId Int      @id @default(autoincrement()) @map("commentId")
-  feedId    Int      @map("feedId")
-  userId    Int      @map("userId")
+  commentId Int      @id @default(autoincrement()) @map("comment_id")
+  feedId    Int      @map("feed_id")
+  userId    Int      @map("user_id")
   comment   String   @map("comment") @db.Text
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [userId])
   feed Feed @relation(fields: [feedId], references: [feedId])
 
-  @@map("Comments")
+  @@map("comments")
 }
 
 model Log {
-  logId       Int      @id @default(autoincrement()) @map("logId")
-  profileId   Int      @map("profileId")
-  changeField Int      @map("changeField")
-  oldValue    String?  @map("oldValue")
-  newValue    String   @map("newValue")
-  updatedAt   DateTime @updatedAt @map("updatedAt")
+  logId       Int      @id @default(autoincrement()) @map("log_id")
+  profileId   Int      @map("profile_id")
+  changeField String   @map("change_field")
+  oldValue    String?  @map("old_value")
+  newValue    String   @map("new_value")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   profile Profile @relation(fields: [profileId], references: [profileId])
 
-  @@map("Logs")
+  @@map("logs")
 }
 
 enum UserRole {
