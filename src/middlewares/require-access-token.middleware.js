@@ -26,7 +26,7 @@ export const requireAccessToken = async (req, res, next) => {
                 message: MESSAGES.AUTH.JWT.NO_TOKEN,
         })};
 
-        let payload;
+    let payload;
     try {
         payload = jwt.verify(accessToken, ACCESS_TOKEN_SECRET)
     } catch(error){
@@ -43,7 +43,7 @@ export const requireAccessToken = async (req, res, next) => {
     }
 
     const { userId } = payload;
-    const user = prisma.users.findUnique({where: { userId }, omit: {password: true},
+    const user = prisma.user.findUnique({where: { userId }, omit: {password: true},
     });
 
     if(!user) {
