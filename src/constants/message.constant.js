@@ -33,4 +33,9 @@ export const MESSAGES = {
       UNAUTHORIZED: '인증에 실패했습니다',
     },
   },
+  USRES: {
+    READ: {
+      SUCCEED: '프로필 정보 조회에 성공하였습니다.',
+    },
+  },
 };
