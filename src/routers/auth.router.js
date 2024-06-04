@@ -7,9 +7,10 @@ import bcrypt from 'bcrypt';
 import {
   ACCESS_TOKEN_EXPIRES,
   HASH_SALT_ROUNDS,
+  REFRESH_TOKEN_EXPIRES,
 } from '../constants/auth.constant.js';
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET } from '../constants/env.constant.js';
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../constants/env.constant.js';
 import { signInValidator } from '../middlewares/validators/sign-in-validator.middleware.js';
 
 const authRouter = express.Router();
@@ -90,13 +91,29 @@ authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
       expiresIn: ACCESS_TOKEN_EXPIRES,
     });
 
-    return res.status(HTTP_STATUS.OK).json({
-      message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
-      data: { accessToken },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+
+        const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+            expiresIn: REFRESH_TOKEN_EXPIRES,
+        });
+
+        const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS)
+
+        await prisma.user.update({
+            where: {
+                email: user.email,
+            },
+            data: {
+            refreshToken: hashedRefreshToken
+            },
+        })
+
+        return res.status(HTTP_STATUS.OK).json({
+            message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
+            data: { accessToken }
+        })
+    } catch(error){
+        next(error)
+    }
+})
 
 export { authRouter };
