@@ -30,7 +30,11 @@ export const MESSAGES = {
     },
     SIGN_IN:{
       SUCCEED: '로그인에 성공했습니다.',
-      UNAUTHORIZED: '인증에 실패했습니다'
+      UNAUTHORIZED: '인증에 실패했습니다.',
+      TOKEN: '토근 재발급에 성공했습니다.'
+    },
+    SIGN_OUT:{
+      SUCCEED: '로그아웃에 성공했습니다.'
     }
   },
 };

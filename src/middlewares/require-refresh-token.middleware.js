@@ -1,10 +1,11 @@
-import { ACCESS_TOKEN_SECRET } from "../constants/env.constant.js";
+import { REFRESH_TOKEN_SECRET } from "../constants/env.constant.js";
 import { HTTP_STATUS } from "../constants/http-status.constant.js";
 import { MESSAGES } from "../constants/message.constant.js";
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.util.js'
+import bcrypt from 'bcrypt'
 
-export const requireAccessToken = async (req, res, next) => {
+export const requireRefreshToken = async (req, res, next) => {
     try {
         const authorization = req.headers.authorization;
 
@@ -14,21 +15,21 @@ export const requireAccessToken = async (req, res, next) => {
             })
         }
 
-        const [ type, accessToken ] = authorization.split(' ');
+        const [ type, refreshToken ] = authorization.split(' ');
 
         if(type !== 'Bearer'){
             return res.status(HTTP_STATUS.UNAUTHORIZED).json({
                 message: MESSAGES.AUTH.JWT.NOT_SUPPORTED_TYPE,
         })}
         
-        if (!accessToken){
+        if (!refreshToken){
             return res.status(HTTP_STATUS.UNAUTHORIZED).json({
                 message: MESSAGES.AUTH.JWT.NO_TOKEN,
         })};
 
     let payload;
     try {
-        payload = jwt.verify(accessToken, ACCESS_TOKEN_SECRET)
+        payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET)
     } catch(error){
         if(error.name === 'TokenExpiredError'){
             return res.status(HTTP_STATUS.UNAUTHORIZED).json({
@@ -41,9 +42,24 @@ export const requireAccessToken = async (req, res, next) => {
         })
         }
     }
+    const { email } = payload;
 
-    const { userId } = payload;
-    const user = prisma.user.findUnique({where: { userId }, omit: {password: true},
+    const existedRefreshToken = await prisma.user.findUnique({ where:{
+        email: email
+    }})
+
+    const isValidRefreshToken = existedRefreshToken?.refreshToken && 
+    bcrypt.compareSync(refreshToken, existedRefreshToken.refreshToken)
+
+    if(!isValidRefreshToken){
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+            message: MESSAGES.AUTH.JWT.NO_USER
+        })
+    }
+
+
+    
+    const user = prisma.user.findUnique({where: { email: user.email }, omit: {password: true},
     });
 
     if(!user) {
@@ -54,6 +70,7 @@ export const requireAccessToken = async (req, res, next) => {
 
     req.user = user;
     next();
+
     }catch(error){
     next(error)
     }
