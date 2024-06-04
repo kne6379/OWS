@@ -1,6 +1,6 @@
 import { HTTP_STATUS } from "../constants/http-status.constant";
 
-export const errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, req, res) => {
   console.error(err);
 
   // joi에서 발생한 에러 처리

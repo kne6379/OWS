@@ -13,8 +13,8 @@ const authRouter = express.Router();
 
 authRouter.post('/sign-up', signUpValidator, async (req, res, next)=>{
     try {
-        const {email, password, nickname,
-            introduce, maxweight, weight, height, fat, metabolic, muscleweight, img_url} = req.body;
+        const {email, password, nickName,
+            introduce, maxweight, weight, height, fat, metabolic, muscleweight, profile_img_url} = req.body;
 
         const existedUser = await prisma.users.findUnique({where: {email}})
 
@@ -26,14 +26,16 @@ authRouter.post('/sign-up', signUpValidator, async (req, res, next)=>{
         const hashedPassword = bcrypt.hashSync(password, HASH_SALT_ROUNDS)
 
         const data = await prisma.users.create({
-            data: { email, password: hashedPassword, nickname,
-                introduce, maxweight, weight, height, fat, metabolic, muscleweight, img_url
-            }
+            data: { email, password: hashedPassword, nickName }
         });
+        
+        const profileData = await prisma.profile.create({
+            introduce, maxweight, weight, height, fat, metabolic, muscleweight, profile_img_url })
 
         return res.status(HTTP_STATUS.CREATED).json({
             message: MESSAGES.AUTH.SIGN_UP.SUCCEED,
             data,
+            profileData
         });
     } catch (error) {
         next(error);
