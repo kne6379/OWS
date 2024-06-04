@@ -118,14 +118,14 @@ feedsRouter.patch('/feeds/:feedId', requireAccessToken, async(req, res, next) =>
 		if (!title&&!content&&!feed_img_url) {
 			throw new Error('수정할 정보를 입력해주세요.');
 		}
-		const nickName = await prisma.users.findFirst({
+		const nickName = await prisma.users.findFirst({ 
 			where: { userId },
 			celect: {
 				nickName: true
 			}
 		});
 
-		const feed = await prisma.feeds.findFirst({
+		const feed = await prisma.feeds.findFirst({ //unique
 			where: {
 				userId,
 				feedId: +feedId
@@ -162,6 +162,33 @@ feedsRouter.patch('/feeds/:feedId', requireAccessToken, async(req, res, next) =>
 		next(error);
 	}
 
+})
+
+// 게시물 삭제 API
+
+feedsRouter.delete('/feeds/:feedId', requireAccessToken, async(req, res, next) => {
+	try {
+		const userId = req.user;
+		const feedId = req.params;
+		const feed = await prisma.feeds.findUnique({
+			where: {
+				userId,
+				feedId: +feedId
+			}
+		});
+		if (!feed) {
+			throw new Error('게시물이 존재하지 않습니다.')
+		}
+		await prisma.feeds.delete({
+			where: {
+				feedId: +feedId
+			}
+		});
+		return res.status(200).json({status: 200, message: "게시물 삭제에 성공했습니다.", deletedFeedId: +feedId});
+	} catch(error) {
+		next(error);
+	}
+	
 })
 
 
