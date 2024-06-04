@@ -1,8 +1,9 @@
 import express from 'express';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
-import { signUpValidator } from '../middlewares/validators/sign-up-validator.middleware.js';
+import { signupValidator } from '../middlewares/validators/sign-up-validator.middleware.js';
 import { prisma } from '../utils/prisma.util.js';
+import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import {
   ACCESS_TOKEN_EXPIRES,
@@ -15,17 +16,19 @@ import { signInValidator } from '../middlewares/validators/sign-in-validator.mid
 
 const authRouter = express.Router();
 
-authRouter.post('/sign-up', signUpValidator, async (req, res, next) => {
+authRouter.post('/sign-up', signupValidator, async (req, res, next) => {
   try {
     const {
       email,
       password,
+      repeat_password,
       nickName,
       introduce,
       maxweight,
       weight,
       height,
       fat,
+      showLog,
       metabolic,
       muscleweight,
       profile_img_url,
@@ -33,37 +36,45 @@ authRouter.post('/sign-up', signUpValidator, async (req, res, next) => {
 
     const existedUser = await prisma.user.findUnique({ where: { email } });
 
+    // 이메일 중복처리
     if (existedUser) {
       return res
         .status(HTTP_STATUS.CONFLICT)
         .json({ message: MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED });
     }
-
     const hashedPassword = bcrypt.hashSync(password, HASH_SALT_ROUNDS);
-    const refreshToken = 'hi';
-    const data = await prisma.user.create({
-      data: { email, password: hashedPassword, refreshToken, nickName },
-    });
 
-    const profileData = await prisma.profile.create({
-      data: {
-        introduce,
-        maxweight,
-        weight,
-        height,
-        fat,
-        metabolic,
-        muscleweight,
-        profile_img_url,
-        showLog: true,
-        nickName: data.nickName,
-        userId: data.userId,
+    // 유저 테이블과 유저 정보 테이블을 한번에 생성하는 트랜잭션
+    const [userData, profileData] = await prisma.$transaction(
+      async (tx) => {
+        const userData = await tx.user.create({
+          data: { email, password: hashedPassword, nickName },
+        });
+
+        userData.password = undefined;
+
+        const profileData = await tx.profile.create({
+          data: {
+            introduce,
+            maxweight,
+            weight,
+            height,
+            fat,
+            metabolic,
+            muscleweight,
+            profile_img_url,
+            showLog,
+            nickName: userData.nickName,
+            userId: userData.userId,
+          },
+        });
+        return [userData, profileData];
       },
-    });
-
+      { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted },
+    );
     return res.status(HTTP_STATUS.CREATED).json({
       message: MESSAGES.AUTH.SIGN_UP.SUCCEED,
-      data,
+      userData,
       profileData,
     });
   } catch (error) {
