@@ -9,4 +9,9 @@ export const MESSAGES = {
       DISCARDED_TOKEN: '폐기 된 인증 정보입니다.',
     },
   },
+  USRES: {
+    READ: {
+      SUCCEED: '프로필 정보 조회에 성공하였습니다.',
+    },
+  },
 };
