@@ -23,7 +23,8 @@ export const MESSAGES = {
       NOT_SUPPORTED_TYPE: '지원하지 않는 인증 방식입니다.',
       EXPIRED: '인증 정보가 만료되었습니다.',
       NO_USER: '인증 정보와 일치하는 사용자가 없습니다.',
-      INVALID: '인증 정보가 유효하지 않습니다.'
+      INVALID: '인증 정보가 유효하지 않습니다.',
+      DISCARDED:'폐기된 인증 정보입니다.'
     },
     SIGN_UP:{
       SUCCEED: '회원가입에 성공했습니다.'
