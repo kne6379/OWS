@@ -32,8 +32,7 @@ export const MESSAGES = {
     },
     SIGN_IN: {
       SUCCEED: '로그인에 성공했습니다.',
-
-      UNAUTHORIZED: '인증에 실패했습니다.',
+      UNAUTHORIZED: '인증에 실패했습니다',
       TOKEN: '토근 재발급에 성공했습니다.'
     },
     SIGN_OUT:{
@@ -45,7 +44,6 @@ export const MESSAGES = {
     READ: {
       SUCCEED: '프로필 정보 조회에 성공하였습니다.',
     },
-
   },
 
   COMMENTS: {
@@ -70,6 +68,32 @@ export const MESSAGES = {
     DELETE: {
       SUCCEED: '댓글 삭제에 성공했습니다.',
       NO_AUTH: '이 댓글에 대한 삭제 권한이 없습니다.',
+    },
+  },
+
+  FEAD: {
+    COMMON: {
+      REQUIRED: {
+        TITLE: '제목을 입력해주세요.',
+        CONTENT: '내용을 입력해주세요.',
+        UPDATE: '수정할 정보를 입력해주세요.',
+      },
+      NO: {
+        FEAD: '게시글이 존재하지 않습니다.',
+      },
+      NOT: {
+        IMG_URL: '이미지 형식이 알맞지 않습니다.',
+      },
+      MIN: {
+        CONTENT: '내용은 100자 이상 작성해야 합니다.',
+      },
+      SUCCEED: {
+        CREATED: '게시글 생성에 성공했습니다.',
+        UPDATED: '게시글 수정에 성공했습니다.',
+        GET: '게시글 조회에 성공했습니다.',
+        GET_ALL: '게시글 목록 조회에 성공했습니다.',
+        DELETED: '게시글 삭제에 성공했습니다.',
+      },
     },
   },
 };
