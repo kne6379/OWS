@@ -10,35 +10,70 @@ const userRouter = express.Router();
 userRouter.get('/:profileId', async (req, res, next) => {
   const { profileId } = req.params;
   let userProfile = await prisma.profile.findUnique({
-    where: { profileId },
+    where: {
+      profileId: +profileId,
+    },
   });
-
   if (!userProfile.showLog) {
-    userProfile = userProfile.map((profile) => {
-      return {
-        nickName: profile.nickName,
-        userId: profile.userId,
-        createdAt: profile.createdAt,
-      };
-    });
+    userProfile = {
+      nickName: userProfile.nickName,
+      userId: userProfile.userId,
+      createdAt: userProfile.createdAt,
+    };
   }
-  return res
-    .status(HTTP_STATUS.OK)
-    .json({ status: res.statusCode, message: MESSAGES.USRES.READ.SUCCEED });
+  return res.status(HTTP_STATUS.OK).json({
+    userProfile,
+    status: res.statusCode,
+    message: MESSAGES.USRES.READ.SUCCEED,
+  });
 });
 
+// 프로필 수정 API
 userRouter.patch('/profile', requireAccessToken, async (req, res, next) => {
-  const { userId } = req.user;
+  try {
+    const user = req.user;
+    console.log(user);
+    const {
+      introduce,
+      profile_img_url,
+      maxweight,
+      weight,
+      height,
+      muscleweight,
+      fat,
+      metabolic,
+    } = req.body;
 
-  const {
-    nickName,
-    introduce,
-    profile_img_url,
-    maxweight,
-    weight,
-    height,
-    mus,
-  } = req.body;
+    await prisma.$transaction(async (tx) => {
+      // 프로필 데이터 수정
+      const profileData = await tx.profile.update({
+        where: { userId: user.userId },
+        data: {
+          ...(introduce && { introduce }),
+          ...(profile_img_url && { profile_img_url }),
+          ...(maxweight && { maxweight }),
+          ...(weight && { weight }),
+          ...(height && { height }),
+          ...(muscleweight && { muscleweight }),
+          ...(fat && { fat }),
+          ...(metabolic && { metabolic }),
+        },
+      });
+
+      const logData = await tx.log.create({
+        data: {
+          profileId: profileData.profileId,
+        },
+      });
+      return res.status(HTTP_STATUS.OK).json({
+        status: res.statusCode,
+        message: MESSAGES.USRES.READ.SUCCEED,
+        profileData,
+      });
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export { userRouter };
