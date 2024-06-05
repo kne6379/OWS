@@ -89,7 +89,7 @@ model Log {
   changeField String   @map("change_field")
   oldValue    String?  @map("old_value")
   newValue    String   @map("new_value")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  changedAt   DateTime @default(now()) @map("changed_at")
 
   profile Profile @relation(fields: [profileId], references: [profileId])
 

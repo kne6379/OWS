@@ -2,6 +2,7 @@ import express from 'express';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { prisma } from '../utils/prisma.util.js';
+import { Prisma } from '@prisma/client';
 import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
 
 const userRouter = express.Router();
@@ -28,49 +29,46 @@ userRouter.get('/:profileId', async (req, res, next) => {
   });
 });
 
-// 프로필 수정 API
 userRouter.patch('/profile', requireAccessToken, async (req, res, next) => {
   try {
     const user = req.user;
     console.log(user);
-    const {
-      introduce,
-      profile_img_url,
-      maxweight,
-      weight,
-      height,
-      muscleweight,
-      fat,
-      metabolic,
-    } = req.body;
-
-    await prisma.$transaction(async (tx) => {
-      // 프로필 데이터 수정
-      const profileData = await tx.profile.update({
-        where: { userId: user.userId },
-        data: {
-          ...(introduce && { introduce }),
-          ...(profile_img_url && { profile_img_url }),
-          ...(maxweight && { maxweight }),
-          ...(weight && { weight }),
-          ...(height && { height }),
-          ...(muscleweight && { muscleweight }),
-          ...(fat && { fat }),
-          ...(metabolic && { metabolic }),
-        },
-      });
-
-      const logData = await tx.log.create({
-        data: {
-          profileId: profileData.profileId,
-        },
-      });
-      return res.status(HTTP_STATUS.OK).json({
-        status: res.statusCode,
-        message: MESSAGES.USRES.READ.SUCCEED,
-        profileData,
-      });
+    const updateProfileData = req.body;
+    const prevProfile = await prisma.profile.findUnique({
+      where: {
+        userId: user.userId,
+      },
     });
+    await prisma.$transaction(
+      async (tx) => {
+        // 프로필 데이터 수정
+        const profileData = await tx.profile.update({
+          where: { userId: user.userId },
+          data: {
+            ...updateProfileData,
+          },
+        });
+        // 로그 데이터 추가
+        for (let key in updateProfileData) {
+          if (prevProfile[key] !== updateProfileData[key]) {
+            await tx.log.create({
+              data: {
+                profileId: profileData.profileId,
+                changeField: key,
+                oldValue: String(prevProfile[key]),
+                newValue: String(updateProfileData[key]),
+              },
+            });
+          }
+        }
+        return res.status(HTTP_STATUS.OK).json({
+          status: res.statusCode,
+          message: MESSAGES.USRES.READ.SUCCEED,
+          profileData,
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted },
+    );
   } catch (error) {
     next(error);
   }
