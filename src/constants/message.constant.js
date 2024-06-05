@@ -8,13 +8,13 @@ export const MESSAGES = {
       },
       PASSWORD: {
         REQUIRED: '비밀번호를 입력해 주세요.',
-        MIN_LENGTH: '비밀번호는 6자리 이상이어야 합니다.'
+        MIN_LENGTH: '비밀번호는 6자리 이상이어야 합니다.',
       },
-      REPEAT_PASSWORD:{
+      REPEAT_PASSWORD: {
         REQUIRED: '비밀번호 확인을 입력해 주세요.',
         NOT_MATCHED: '비밀번호가 일치하지 않습니다.',
       },
-      NICKNAME:{
+      NICKNAME: {
         REQUIRED: '별명을 입력해주세요.',
       },
     },
@@ -23,39 +23,39 @@ export const MESSAGES = {
       NOT_SUPPORTED_TYPE: '지원하지 않는 인증 방식입니다.',
       EXPIRED: '인증 정보가 만료되었습니다.',
       NO_USER: '인증 정보와 일치하는 사용자가 없습니다.',
-      INVALID: '인증 정보가 유효하지 않습니다.'
+      INVALID: '인증 정보가 유효하지 않습니다.',
     },
-    SIGN_UP:{
-      SUCCEED: '회원가입에 성공했습니다.'
+    SIGN_UP: {
+      SUCCEED: '회원가입에 성공했습니다.',
     },
-    SIGN_IN:{
+    SIGN_IN: {
       SUCCEED: '로그인에 성공했습니다.',
-      UNAUTHORIZED: '인증에 실패했습니다'
-    }
+      UNAUTHORIZED: '인증에 실패했습니다',
+    },
   },
   FEAD: {
     COMMON: {
       REQUIRED: {
         TITLE: '제목을 입력해주세요.',
         CONTENT: '내용을 입력해주세요.',
-        UPDATED: '수정할 정보를 입력해주세요.'
+        UPDATE: '수정할 정보를 입력해주세요.',
       },
       NO: {
-        FEAD: '게시글이 존재하지 않습니다.'
+        FEAD: '게시글이 존재하지 않습니다.',
       },
       NOT: {
         IMG_URL: '이미지 형식이 알맞지 않습니다.',
       },
       MIN: {
-        CONTENT: '내용은 100자 이상 작성해야 합니다.'
+        CONTENT: '내용은 100자 이상 작성해야 합니다.',
       },
       SUCCEED: {
         CREATED: '게시글 생성에 성공했습니다.',
         UPDATED: '게시글 수정에 성공했습니다.',
         GET: '게시글 조회에 성공했습니다.',
         GET_ALL: '게시글 목록 조회에 성공했습니다.',
-        DELETED:'게시글 삭제에 성공했습니다.'
-      }
-    }
-  }
+        DELETED: '게시글 삭제에 성공했습니다.',
+      },
+    },
+  },
 };

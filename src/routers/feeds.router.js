@@ -1,61 +1,60 @@
 import express from 'express';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
-import joi from 'joi';
 import { prisma } from '../utils/prisma.util.js';
 import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
+import { feadCreateValidator } from '../middlewares/validators/fead-create-validator.middleware.js';
+import { feadUpdateValidator } from '../middlewares/validators/fead-update-validator.middleware.js';
 
 const feedsRouter = express.Router();
 
-// joi 유효성 검사
-const createdFeedsSchema = joi.object({
-  title: joi.string().required(),
-  content: joi.string().min(100).required(),
-  feed_img_url: joi.string().uri(),
-});
-
 // 게시물 작성 API
-feedsRouter.post('/feeds', requireAccessToken, async (req, res, next) => {
-  try {
-    const { userId } = req.user;
-    const validation = await createdFeedsSchema.validateAsync(req.body);
-    const { title, content, feed_img_url } = validation;
 
-    const { nickName } = await prisma.user.findFirst({
-      where: { userId },
-      select: {
-        nickName: true,
-      },
-    });
+feedsRouter.post(
+  '/feeds',
+  requireAccessToken,
+  feadCreateValidator,
+  async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const { title, content, feed_img_url } = req.body;
 
-    const feed = await prisma.feed.create({
-      data: {
-        userId,
-        nickName,
-        title,
-        content,
-        feed_img_url,
-      },
-      select: {
-        feedId: true,
-        userId: true,
-        title: true,
-        nickName: true,
-        content: true,
-        feed_img_url: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-    return res.status(HTTP_STATUS.CREATED).json({
-      status: HTTP_STATUS.CREATED,
-      message: MESSAGES.FEAD.COMMON.SUCCEED.CREATED,
-      data: feed,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+      const { nickName } = await prisma.user.findFirst({
+        where: { userId },
+        select: {
+          nickName: true,
+        },
+      });
+
+      const feed = await prisma.feed.create({
+        data: {
+          userId,
+          nickName,
+          title,
+          content,
+          feed_img_url,
+        },
+        select: {
+          feedId: true,
+          userId: true,
+          title: true,
+          nickName: true,
+          content: true,
+          feed_img_url: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+      return res.status(HTTP_STATUS.CREATED).json({
+        status: HTTP_STATUS.CREATED,
+        message: MESSAGES.FEAD.COMMON.SUCCEED.CREATED,
+        data: feed,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 // 게시물 목록 조회 API
 
@@ -100,12 +99,10 @@ feedsRouter.get('/feeds/:feedId', async (req, res, next) => {
       },
     });
     if (!feed) {
-      return res
-        .status(HTTP_STATUS.NOT_FOUND)
-        .json({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: MESSAGES.FEAD.COMMON.NO.FEAD,
-        });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: MESSAGES.FEAD.COMMON.NO.FEAD,
+      });
     }
     return res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
@@ -117,30 +114,21 @@ feedsRouter.get('/feeds/:feedId', async (req, res, next) => {
   }
 });
 
-// joi 유효성 검사
-const patchFeedSchema = joi.object({
-  title: joi.string(),
-  content: joi.string().min(100),
-  feed_img_url: joi.string().uri(),
-});
-
 // 게시물 수정 API
 
 feedsRouter.patch(
   '/feeds/:feedId',
   requireAccessToken,
+  feadUpdateValidator,
   async (req, res, next) => {
     try {
       const { userId } = req.user;
       const { feedId } = req.params;
-      const validation = await patchFeedSchema.validateAsync(req.body);
-      const { title, content, feed_img_url } = validation;
+      const { title, content, feed_img_url } = req.body;
       if (!title && !content && !feed_img_url) {
-				return res
-        .status(HTTP_STATUS.BAD_REQUEST)
-        .json({
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
           status: HTTP_STATUS.BAD_REQUEST,
-          message: MESSAGES.FEAD.COMMON.REQUIRED.UPDATED,
+          message: MESSAGES.FEAD.COMMON.REQUIRED.UPDATE,
         });
       }
       const { nickName } = await prisma.user.findFirst({
@@ -157,9 +145,7 @@ feedsRouter.patch(
         },
       });
       if (!feed) {
-				return res
-        .status(HTTP_STATUS.NOT_FOUND)
-        .json({
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
           status: HTTP_STATUS.NOT_FOUND,
           message: MESSAGES.FEAD.COMMON.NO.FEAD,
         });
@@ -214,9 +200,7 @@ feedsRouter.delete(
         },
       });
       if (!feed) {
-				return res
-        .status(HTTP_STATUS.NOT_FOUND)
-        .json({
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
           status: HTTP_STATUS.NOT_FOUND,
           message: MESSAGES.FEAD.COMMON.NO.FEAD,
         });
@@ -226,13 +210,11 @@ feedsRouter.delete(
           feedId: +feedId,
         },
       });
-      return res
-        .status(HTTP_STATUS.OK)
-        .json({
-          status: HTTP_STATUS.OK,
-          message: MESSAGES.FEAD.COMMON.SUCCEED.DELETED,
-          deletedFeedId: +feedId,
-        });
+      return res.status(HTTP_STATUS.OK).json({
+        status: HTTP_STATUS.OK,
+        message: MESSAGES.FEAD.COMMON.SUCCEED.DELETED,
+        deletedFeedId: +feedId,
+      });
     } catch (error) {
       next(error);
     }
