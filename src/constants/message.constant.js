@@ -33,4 +33,29 @@ export const MESSAGES = {
       UNAUTHORIZED: '인증에 실패했습니다'
     }
   },
+  FEAD: {
+    COMMON: {
+      REQUIRED: {
+        TITLE: '제목을 입력해주세요.',
+        CONTENT: '내용을 입력해주세요.',
+        UPDATED: '수정할 정보를 입력해주세요.'
+      },
+      NO: {
+        FEAD: '게시글이 존재하지 않습니다.'
+      },
+      NOT: {
+        IMG_URL: '이미지 형식이 알맞지 않습니다.',
+      },
+      MIN: {
+        CONTENT: '내용은 100자 이상 작성해야 합니다.'
+      },
+      SUCCEED: {
+        CREATED: '게시글 생성에 성공했습니다.',
+        UPDATED: '게시글 수정에 성공했습니다.',
+        GET: '게시글 조회에 성공했습니다.',
+        GET_ALL: '게시글 목록 조회에 성공했습니다.',
+        DELETED:'게시글 삭제에 성공했습니다.'
+      }
+    }
+  }
 };

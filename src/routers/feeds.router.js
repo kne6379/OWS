@@ -1,4 +1,6 @@
 import express from 'express';
+import { HTTP_STATUS } from '../constants/http-status.constant.js';
+import { MESSAGES } from '../constants/message.constant.js';
 import joi from 'joi';
 import { prisma } from '../utils/prisma.util.js';
 import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
@@ -45,9 +47,9 @@ feedsRouter.post('/feeds', requireAccessToken, async (req, res, next) => {
         updatedAt: true,
       },
     });
-    return res.status(201).json({
-      status: 201,
-      message: '게시글 생성에 성공했습니다.',
+    return res.status(HTTP_STATUS.CREATED).json({
+      status: HTTP_STATUS.CREATED,
+      message: MESSAGES.FEAD.COMMON.SUCCEED.CREATED,
       data: feed,
     });
   } catch (error) {
@@ -72,9 +74,9 @@ feedsRouter.get('/feeds', async (req, res, next) => {
     orderBy: { updatedAt: orderBy },
   });
 
-  return res.status(200).json({
-    status: 200,
-    message: '게시물 목록 조회에 성공하였습니다.',
+  return res.status(HTTP_STATUS.OK).json({
+    status: HTTP_STATUS.OK,
+    message: MESSAGES.FEAD.COMMON.SUCCEED.GET_ALL,
     data: feeds,
   });
 });
@@ -98,11 +100,16 @@ feedsRouter.get('/feeds/:feedId', async (req, res, next) => {
       },
     });
     if (!feed) {
-      throw new Error('게시물이 존재하지 않습니다.');
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({
+          status: HTTP_STATUS.NOT_FOUND,
+          message: MESSAGES.FEAD.COMMON.NO.FEAD,
+        });
     }
-    return res.status(200).json({
-      status: 200,
-      message: '게시물 조회에 성공하였습니다.',
+    return res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.FEAD.COMMON.SUCCEED.GET,
       data: feed,
     });
   } catch (error) {
@@ -119,19 +126,27 @@ const patchFeedSchema = joi.object({
 
 // 게시물 수정 API
 
-feedsRouter.patch('/feeds/:feedId', requireAccessToken, async (req, res, next) => {
+feedsRouter.patch(
+  '/feeds/:feedId',
+  requireAccessToken,
+  async (req, res, next) => {
     try {
       const { userId } = req.user;
       const { feedId } = req.params;
       const validation = await patchFeedSchema.validateAsync(req.body);
       const { title, content, feed_img_url } = validation;
       if (!title && !content && !feed_img_url) {
-        throw new Error('수정할 정보를 입력해주세요.');
+				return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({
+          status: HTTP_STATUS.BAD_REQUEST,
+          message: MESSAGES.FEAD.COMMON.REQUIRED.UPDATED,
+        });
       }
       const { nickName } = await prisma.user.findFirst({
         where: { userId },
         select: {
-          nickName: true
+          nickName: true,
         },
       });
 
@@ -142,7 +157,12 @@ feedsRouter.patch('/feeds/:feedId', requireAccessToken, async (req, res, next) =
         },
       });
       if (!feed) {
-        throw new Error('게시물이 존재하지 않습니다.');
+				return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({
+          status: HTTP_STATUS.NOT_FOUND,
+          message: MESSAGES.FEAD.COMMON.NO.FEAD,
+        });
       }
 
       const updatedFeed = await prisma.feed.update({
@@ -154,7 +174,7 @@ feedsRouter.patch('/feeds/:feedId', requireAccessToken, async (req, res, next) =
           nickName,
           title: title || undefined,
           content: content || undefined,
-          feed_img_url: feed_img_url || undefined
+          feed_img_url: feed_img_url || undefined,
         },
         select: {
           feedId: true,
@@ -164,44 +184,58 @@ feedsRouter.patch('/feeds/:feedId', requireAccessToken, async (req, res, next) =
           content: true,
           feed_img_url: true,
           createdAt: true,
-          updatedAt: true
+          updatedAt: true,
         },
       });
-      return res.status(200).json({
-        status: 200,
-        message: '게시글 수정에 성공했습니다.',
+      return res.status(HTTP_STATUS.OK).json({
+        status: HTTP_STATUS.OK,
+        message: MESSAGES.FEAD.COMMON.SUCCEED.UPDATED,
         data: updatedFeed,
       });
     } catch (error) {
       next(error);
     }
-	
-});
+  },
+);
 
 // 게시물 삭제 API
 
-feedsRouter.delete('/feeds/:feedId', requireAccessToken, async(req, res, next) => {
-	try {
-		const { userId } = req.user;
-		const { feedId } = req.params;
-		const feed = await prisma.feed.findUnique({
-			where: {
-				userId,
-				feedId: +feedId
-			}
-		});
-		if (!feed) {
-			throw new Error('게시물이 존재하지 않습니다.')
-		}
-		await prisma.feed.delete({
-			where: {
-				feedId: +feedId
-			}
-		});
-		return res.status(200).json({status: 200, message: "게시물 삭제에 성공했습니다.", deletedFeedId: +feedId});
-	} catch(error) {
-		next(error);
-	}
-
-});
+feedsRouter.delete(
+  '/feeds/:feedId',
+  requireAccessToken,
+  async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const { feedId } = req.params;
+      const feed = await prisma.feed.findUnique({
+        where: {
+          userId,
+          feedId: +feedId,
+        },
+      });
+      if (!feed) {
+				return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({
+          status: HTTP_STATUS.NOT_FOUND,
+          message: MESSAGES.FEAD.COMMON.NO.FEAD,
+        });
+      }
+      await prisma.feed.delete({
+        where: {
+          feedId: +feedId,
+        },
+      });
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({
+          status: HTTP_STATUS.OK,
+          message: MESSAGES.FEAD.COMMON.SUCCEED.DELETED,
+          deletedFeedId: +feedId,
+        });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 export default feedsRouter;
