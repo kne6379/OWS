@@ -1,3 +1,5 @@
+import { MIN_COMMENT_LENGTH } from './comment.constant.js';
+
 export const MESSAGES = {
   AUTH: {
     COMMON: {
@@ -31,8 +33,44 @@ export const MESSAGES = {
     SIGN_IN: {
       SUCCEED: '로그인에 성공했습니다.',
       UNAUTHORIZED: '인증에 실패했습니다',
+      TOKEN: '토근 재발급에 성공했습니다.'
+    },
+    SIGN_OUT:{
+      SUCCEED: '로그아웃에 성공했습니다.'
     },
   },
+
+  USRES: {
+    READ: {
+      SUCCEED: '프로필 정보 조회에 성공하였습니다.',
+    },
+  },
+
+  COMMENTS: {
+    COMMON: {
+      COMMENT: {
+        REQUIRED: '내용을 입력해 주세요.',
+        MIN_LENGTH: `내용은 ${MIN_COMMENT_LENGTH}자 이상 작성해야 합니다.`,
+      },
+      NOT_FOUND: '댓글이 존재하지 않습니다.',
+    },
+    CREATE: {
+      SUCCEED: '댓글 작성에 성공했습니다.',
+    },
+    READ_LIST: {
+      SUCCEED: '댓글 조회에 성공했습니다.',
+    },
+    UPDATE: {
+      SUCCEED: '댓글 수정에 성공했습니다.',
+      NO_BODY_DATA: '수정할 정보를 입력해 주세요.',
+      NO_AUTH: '이 댓글에 대한 수정 권한이 없습니다',
+    },
+    DELETE: {
+      SUCCEED: '댓글 삭제에 성공했습니다.',
+      NO_AUTH: '이 댓글에 대한 삭제 권한이 없습니다.',
+    },
+  },
+
   FEAD: {
     COMMON: {
       REQUIRED: {

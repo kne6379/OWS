@@ -20,7 +20,7 @@ model User {
   password     String   @map("password")
   nickName     String   @unique @map("nick_name")
   role         UserRole @default(COMMON) @map("role")
-  refreshToken String   @map("refresh_token")
+  refreshToken String?   @map("refresh_token")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -34,7 +34,7 @@ model User {
 model Profile {
   profileId       Int      @id @default(autoincrement()) @map("profile_id")
   userId          Int      @unique @map("user_id")
-  showLog         Boolean  @map("show_log")
+  showLog         Boolean  @default(true) @map("show_log")
   nickName        String   @map("nick_name")
   introduce       String?  @map("introduce")
   profile_img_url String?  @map("profile_img_url")
