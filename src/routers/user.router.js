@@ -2,7 +2,7 @@ import express from 'express';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { prisma } from '../utils/prisma.util.js';
-import { authAccessToken } from '../middlewares/auth-accesstoken.middleware.js';
+import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
 
 const userRouter = express.Router();
 
@@ -27,7 +27,7 @@ userRouter.get('/:profileId', async (req, res, next) => {
     .json({ status: res.statusCode, message: MESSAGES.USRES.READ.SUCCEED });
 });
 
-userRouter.patch('/profile', authAccessToken, async (req, res, next) => {
+userRouter.patch('/profile', requireAccessToken, async (req, res, next) => {
   const { userId } = req.user;
 
   const {

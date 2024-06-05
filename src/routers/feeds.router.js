@@ -2,7 +2,6 @@ import express from 'express';
 import joi from 'joi';
 import { prisma } from '../utils/prisma.util.js';
 import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
-import { authAccessToken } from '../middlewares/auth-accesstoken.middleware.js';
 
 const feedsRouter = express.Router();
 
@@ -14,7 +13,7 @@ const createdFeedsSchema = joi.object({
 });
 
 // 게시물 작성 API
-feedsRouter.post('/', authAccessToken, async (req, res, next) => {
+feedsRouter.post('/', requireAccessToken, async (req, res, next) => {
   try {
     const { userId } = req.user;
     const validation = createdFeedsSchema.validateAsync(req.body);
@@ -120,7 +119,7 @@ const patchFeedSchema = joi.object({
 
 // 게시물 수정 API
 
-feedsRouter.patch('/:feedId', authAccessToken, async (req, res, next) => {
+feedsRouter.patch('/:feedId', requireAccessToken, async (req, res, next) => {
   try {
     const { userId } = req.user;
     const feedId = req.params;

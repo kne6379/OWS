@@ -11,7 +11,10 @@ import {
   REFRESH_TOKEN_EXPIRES,
 } from '../constants/auth.constant.js';
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../constants/env.constant.js';
+import {
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+} from '../constants/env.constant.js';
 import { signInValidator } from '../middlewares/validators/sign-in-validator.middleware.js';
 import { requireRefreshToken } from '../middlewares/require-refresh-token.middleware.js';
 
@@ -83,106 +86,92 @@ authRouter.post('/sign-up', signupValidator, async (req, res, next) => {
   }
 });
 
+// login API
 authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     const user = await prisma.user.findUnique({ where: { email } });
-
     const passwordMatch = user && bcrypt.compareSync(password, user.password);
 
     if (!passwordMatch) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        status: res.statusCode,
         message: MESSAGES.AUTH.SIGN_IN.UNAUTHORIZED,
       });
     }
 
-    const payload = { id: user.id };
-
-    const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-      expiresIn: ACCESS_TOKEN_EXPIRES,
-    });
-
-
-    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-        expiresIn: REFRESH_TOKEN_EXPIRES,
-    });
-
-    const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS)
-
-    await prisma.user.update({
-        where: {
-            email: user.email,
-        },
-        data: {
-            refreshToken: hashedRefreshToken
-        },
-    })
+    const payload = { id: user.userId };
+    const data = await generateAuthTokens(payload);
 
     return res.status(HTTP_STATUS.OK).json({
-        message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
-        data: { accessToken, refreshToken }
-    })
-    } catch(error){
-        next(error)
-    }
-})
-
-authRouter.post('/token', requireRefreshToken, async (req, res, next)=>{
-  try {
-      const user = req.user
-
-      const payload = { id: user.id };
-
-      const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-        expiresIn: ACCESS_TOKEN_EXPIRES,
-      });
-
-
-      const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-          expiresIn: REFRESH_TOKEN_EXPIRES,
-      });
-
-        const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS)
-
-        await prisma.user.update({
-            where: {
-                email: user.email,
-            },
-            data: {
-                refreshToken: hashedRefreshToken
-            },
-        })
-
-        return res.status(HTTP_STATUS.OK).json({
-            message: MESSAGES.AUTH.SIGN_IN.TOKEN,
-            data: { accessToken, refreshToken }
-        })
-
-  }catch(error){
-    next(error)
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
+      data,
+    });
+  } catch (error) {
+    next(error);
   }
-})
+});
 
-authRouter.post('/sign-out', requireRefreshToken, async (req, res, next)=>{
+// 토큰 재발급 API
+authRouter.post('/token', requireRefreshToken, async (req, res, next) => {
   try {
-    const user = req.user
+    const user = req.user;
+    const payload = { id: user.userId };
 
-    await prisma.refreshToken.update({
-      where:{ email: user.email },
-      data:{
-        refreshToken : null,
+    const data = await generateAuthTokens(payload);
+
+    return res.status(HTTP_STATUS.OK).json({
+      status: res.statusCode,
+      message: MESSAGES.AUTH.SIGN_IN.TOKEN,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.post('/sign-out', requireRefreshToken, async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    await prisma.user.update({
+      where: { userId: user.userId },
+      data: {
+        refreshToken: null,
       },
-    })
+    });
 
     return res.status(HTTP_STATUS.OK).json({
       message: MESSAGES.AUTH.SIGN_OUT.SUCCEED,
-      data: { email: user.email }
-    })
-
-  }catch(error){
-    next(error)
+      data: { id: user.userId },
+    });
+  } catch (error) {
+    next(error);
   }
-})
+});
+
+const generateAuthTokens = async (payload) => {
+  const userId = payload.id;
+  const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    expiresIn: ACCESS_TOKEN_EXPIRES,
+  });
+  const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+    expiresIn: REFRESH_TOKEN_EXPIRES,
+  });
+
+  const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS);
+
+  await prisma.user.update({
+    where: {
+      userId,
+    },
+    data: {
+      refreshToken: hashedRefreshToken,
+    },
+  });
+
+  return { accessToken, refreshToken };
+};
 
 export { authRouter };
