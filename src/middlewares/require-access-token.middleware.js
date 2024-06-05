@@ -1,6 +1,7 @@
-import { ACCESS_TOKEN_SECRET } from '../constants/env.constant';
-import { HTTP_STATUS } from '../constants/http-status.constant';
-import { MESSAGES } from '../constants/message.constant';
+
+import { ACCESS_TOKEN_SECRET } from "../constants/env.constant.js";
+import { HTTP_STATUS } from "../constants/http-status.constant.js";
+import { MESSAGES } from "../constants/message.constant.js";
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.util.js';
 

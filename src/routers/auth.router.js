@@ -13,6 +13,7 @@ import {
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../constants/env.constant.js';
 import { signInValidator } from '../middlewares/validators/sign-in-validator.middleware.js';
+import { requireRefreshToken } from '../middlewares/require-refresh-token.middleware.js';
 
 const authRouter = express.Router();
 
@@ -103,9 +104,44 @@ authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
     });
 
 
-        const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-            expiresIn: REFRESH_TOKEN_EXPIRES,
-        });
+    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+        expiresIn: REFRESH_TOKEN_EXPIRES,
+    });
+
+    const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS)
+
+    await prisma.user.update({
+        where: {
+            email: user.email,
+        },
+        data: {
+            refreshToken: hashedRefreshToken
+        },
+    })
+
+    return res.status(HTTP_STATUS.OK).json({
+        message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
+        data: { accessToken, refreshToken }
+    })
+    } catch(error){
+        next(error)
+    }
+})
+
+authRouter.post('/token', requireRefreshToken, async (req, res, next)=>{
+  try {
+      const user = req.user
+
+      const payload = { id: user.id };
+
+      const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+        expiresIn: ACCESS_TOKEN_EXPIRES,
+      });
+
+
+      const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+          expiresIn: REFRESH_TOKEN_EXPIRES,
+      });
 
         const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS)
 
@@ -114,17 +150,39 @@ authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
                 email: user.email,
             },
             data: {
-            refreshToken: hashedRefreshToken
+                refreshToken: hashedRefreshToken
             },
         })
 
         return res.status(HTTP_STATUS.OK).json({
-            message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
-            data: { accessToken }
+            message: MESSAGES.AUTH.SIGN_IN.TOKEN,
+            data: { accessToken, refreshToken }
         })
-    } catch(error){
-        next(error)
-    }
+
+  }catch(error){
+    next(error)
+  }
+})
+
+authRouter.post('/sign-out', requireRefreshToken, async (req, res, next)=>{
+  try {
+    const user = req.user
+
+    await prisma.refreshToken.update({
+      where:{ email: user.email },
+      data:{
+        refreshToken : null,
+      },
+    })
+
+    return res.status(HTTP_STATUS.OK).json({
+      message: MESSAGES.AUTH.SIGN_OUT.SUCCEED,
+      data: { email: user.email }
+    })
+
+  }catch(error){
+    next(error)
+  }
 })
 
 export { authRouter };
