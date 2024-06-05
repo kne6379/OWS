@@ -11,7 +11,7 @@ const feedsRouter = express.Router();
 // 게시물 작성 API
 
 feedsRouter.post(
-  '/feeds',
+  '/',
   requireAccessToken,
   feadCreateValidator,
   async (req, res, next) => {
@@ -58,7 +58,7 @@ feedsRouter.post(
 
 // 게시물 목록 조회 API
 
-feedsRouter.get('/feeds', async (req, res, next) => {
+feedsRouter.get('/', async (req, res, next) => {
   const orderBy = req.query.sort ? req.query.sort.toLowerCase() : 'desc';
 
   const feeds = await prisma.feed.findMany({
@@ -82,7 +82,7 @@ feedsRouter.get('/feeds', async (req, res, next) => {
 
 // 게시물 상세 조회 API
 
-feedsRouter.get('/feeds/:feedId', async (req, res, next) => {
+feedsRouter.get('/:feedId', async (req, res, next) => {
   try {
     const { feedId } = req.params;
 
@@ -117,7 +117,7 @@ feedsRouter.get('/feeds/:feedId', async (req, res, next) => {
 // 게시물 수정 API
 
 feedsRouter.patch(
-  '/feeds/:feedId',
+  '/:feedId',
   requireAccessToken,
   feadUpdateValidator,
   async (req, res, next) => {
@@ -187,7 +187,7 @@ feedsRouter.patch(
 // 게시물 삭제 API
 
 feedsRouter.delete(
-  '/feeds/:feedId',
+  '/:feedId',
   requireAccessToken,
   async (req, res, next) => {
     try {
