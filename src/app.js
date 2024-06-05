@@ -2,6 +2,7 @@ import express from 'express';
 import { SERVER_PORT } from './constants/env.constant.js';
 import { errorHandler } from './middlewares/error-handler.middleware.js';
 import { apiRouter } from './routers/index.js';
+import feedsRouter from './routers/feeds.router.js';
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.get('/health-check', (req, res) => {
   return res.status(200).send(`I'm healthy.`);
 });
 
-app.use('/api', apiRouter);
+app.use('/api', [apiRouter, feedsRouter]);
 app.use(errorHandler);
 
 app.listen(SERVER_PORT, () => {

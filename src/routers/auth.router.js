@@ -85,7 +85,7 @@ authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
       });
     }
 
-    const payload = { id: user.id };
+    const payload = { userId: user.userId };
 
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
       expiresIn: ACCESS_TOKEN_EXPIRES,
