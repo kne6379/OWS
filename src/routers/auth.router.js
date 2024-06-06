@@ -79,7 +79,6 @@ authRouter.post('/sign-up', signupValidator, async (req, res, next) => {
     return res.status(HTTP_STATUS.CREATED).json({
       message: MESSAGES.AUTH.SIGN_UP.SUCCEED,
       userData,
-      profileData,
     });
   } catch (error) {
     next(error);
