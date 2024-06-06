@@ -15,24 +15,28 @@ const userRouter = express.Router();
 
 // 유저 프로필 조회 API
 userRouter.get('/:profileId', async (req, res, next) => {
-  const { profileId } = req.params;
-  let userProfile = await prisma.profile.findUnique({
-    where: {
-      profileId: +profileId,
-    },
-  });
-  if (!userProfile.showLog) {
-    userProfile = {
-      nickName: userProfile.nickName,
-      userId: userProfile.userId,
-      createdAt: userProfile.createdAt,
-    };
+  try {
+    const { profileId } = req.params;
+    let userProfile = await prisma.profile.findUnique({
+      where: {
+        profileId: +profileId,
+      },
+    });
+    if (!userProfile.showLog) {
+      userProfile = {
+        nickName: userProfile.nickName,
+        userId: userProfile.userId,
+        createdAt: userProfile.createdAt,
+      };
+    }
+    return res.status(HTTP_STATUS.OK).json({
+      userProfile,
+      status: res.statusCode,
+      message: MESSAGES.USRES.READ.SUCCEED,
+    });
+  } catch (error) {
+    next(error);
   }
-  return res.status(HTTP_STATUS.OK).json({
-    userProfile,
-    status: res.statusCode,
-    message: MESSAGES.USRES.READ.SUCCEED,
-  });
 });
 
 //패스워드 수정 API
@@ -41,39 +45,43 @@ userRouter.patch(
   passwordUpdateValidator,
   requireAccessToken,
   async (req, res, next) => {
-    const user = req.user;
-    const { updatePassword, repeat_password, password } = req.body;
-    const prevPassword = await prisma.user.findUnique({
-      where: {
-        userId: user.userId,
-      },
-      select: {
-        password: true,
-      },
-    });
-
-    const passwordMatched =
-      prevPassword && bcrypt.compareSync(password, prevPassword.password);
-    if (!passwordMatched) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        status: res.statusCode,
-        message: MESSAGES.AUTH.COMMON.REPEAT_PASSWORD.NOT_MATCHED,
+    try {
+      const user = req.user;
+      const { updatePassword, repeat_password, password } = req.body;
+      const prevPassword = await prisma.user.findUnique({
+        where: {
+          userId: user.userId,
+        },
+        select: {
+          password: true,
+        },
       });
-    }
 
-    const hashedPassword = bcrypt.hashSync(updatePassword, HASH_SALT_ROUNDS);
-    const newPassword = await prisma.user.update({
-      where: {
-        userId: user.userId,
-      },
-      data: {
-        password: hashedPassword,
-      },
-    });
-    return res.status(HTTP_STATUS.OK).json({
-      status: res.statusCode,
-      message: MESSAGES.USRES.PASSWORD.UPDATE.SUCCEED,
-    });
+      const passwordMatched =
+        prevPassword && bcrypt.compareSync(password, prevPassword.password);
+      if (!passwordMatched) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          status: res.statusCode,
+          message: MESSAGES.AUTH.COMMON.REPEAT_PASSWORD.NOT_MATCHED,
+        });
+      }
+
+      const hashedPassword = bcrypt.hashSync(updatePassword, HASH_SALT_ROUNDS);
+      const newPassword = await prisma.user.update({
+        where: {
+          userId: user.userId,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+      return res.status(HTTP_STATUS.OK).json({
+        status: res.statusCode,
+        message: MESSAGES.USRES.PASSWORD.UPDATE.SUCCEED,
+      });
+    } catch (error) {
+      next(error);
+    }
   },
 );
 
@@ -149,26 +157,29 @@ userRouter.patch(
   },
 );
 
-userRouter.get('/payload/log', requireAccessToken, async (req, res, next) => {
-  const user = req.user;
-  const userLog = await prisma.profile.findUnique({
-    where: {
-      userId: user.userId,
-    },
-    include: {
-      log: {
-        orderBy: {
-          changedAt: 'desc',
+userRouter.get('/profile/log', requireAccessToken, async (req, res, next) => {
+  try {
+    const user = req.user;
+    const userLog = await prisma.profile.findUnique({
+      where: {
+        userId: user.userId,
+      },
+      include: {
+        log: {
+          orderBy: {
+            changedAt: 'desc',
+          },
         },
       },
-    },
-  });
-
-  return res.status(HTTP_STATUS.OK).json({
-    status: res.statusCode,
-    message: MESSAGES.USRES.READ.SUCCEED,
-    userLog,
-  });
+    });
+    return res.status(HTTP_STATUS.OK).json({
+      status: res.statusCode,
+      message: MESSAGES.USRES.LOG.READ,
+      userLog,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export { userRouter };

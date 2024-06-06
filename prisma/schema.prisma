@@ -25,7 +25,9 @@ model User {
   likedCommentsId String?  @default("[]") @map("liked_comments_id")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
-
+  
+  followedby follows[] @relation("followedby")
+  following  follows[] @relation("following")
   profile Profile?
   feed    Feed[]
   comment Comment[]
@@ -98,6 +100,19 @@ model Log {
   profile Profile @relation(fields: [profileId], references: [profileId])
 
   @@map("logs")
+}
+
+
+
+
+model follows {
+
+  followedby   User @relation("followedby", fields: [followedbyid], references: [userId])
+  followedbyid Int
+  following    User @relation("following", fields: [followingid], references: [userId])
+  followingid  Int
+
+  @@id([followingid, followedbyid])
 }
 
 enum UserRole {
