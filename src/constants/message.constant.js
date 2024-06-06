@@ -114,7 +114,7 @@ export const MESSAGES = {
     },
   },
 
-  FEAD: {
+  FEED: {
     COMMON: {
       REQUIRED: {
         TITLE: '제목을 입력해주세요.',
@@ -122,13 +122,13 @@ export const MESSAGES = {
         UPDATE: '수정할 정보를 입력해주세요.',
       },
       NO: {
-        FEAD: '게시글이 존재하지 않습니다.',
+        FEED: '게시글이 존재하지 않습니다.',
       },
       NOT: {
         IMG_URL: '이미지 형식이 알맞지 않습니다.',
       },
       MIN: {
-        CONTENT: '내용은 100자 이상 작성해야 합니다.',
+        CONTENT: '내용은 10자 이상 작성해야 합니다.',
       },
       SUCCEED: {
         CREATED: '게시글 생성에 성공했습니다.',

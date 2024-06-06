@@ -3,8 +3,8 @@ import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { prisma } from '../utils/prisma.util.js';
 import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
-import { feadCreateValidator } from '../middlewares/validators/fead-create-validator.middleware.js';
-import { feadUpdateValidator } from '../middlewares/validators/fead-update-validator.middleware.js';
+import { feedCreateValidator } from '../middlewares/validators/feed-create-validator.middleware.js';
+import { feedUpdateValidator } from '../middlewares/validators/feed-update-validator.middleware.js';
 import { commentRouter } from './comments.router.js';
 
 const feedsRouter = express.Router();
@@ -14,7 +14,7 @@ const feedsRouter = express.Router();
 feedsRouter.post(
   '/',
   requireAccessToken,
-  feadCreateValidator,
+  feedCreateValidator,
   async (req, res, next) => {
     try {
       const { userId } = req.user;
@@ -48,7 +48,7 @@ feedsRouter.post(
       });
       return res.status(HTTP_STATUS.CREATED).json({
         status: HTTP_STATUS.CREATED,
-        message: MESSAGES.FEAD.COMMON.SUCCEED.CREATED,
+        message: MESSAGES.FEED.COMMON.SUCCEED.CREATED,
         data: feed,
       });
     } catch (error) {
@@ -77,7 +77,7 @@ feedsRouter.get('/', async (req, res, next) => {
 
   return res.status(HTTP_STATUS.OK).json({
     status: HTTP_STATUS.OK,
-    message: MESSAGES.FEAD.COMMON.SUCCEED.GET_ALL,
+    message: MESSAGES.FEED.COMMON.SUCCEED.GET_ALL,
     data: feeds,
   });
 });
@@ -104,12 +104,12 @@ feedsRouter.get('/:feedId', async (req, res, next) => {
     if (!feed) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({
         status: HTTP_STATUS.NOT_FOUND,
-        message: MESSAGES.FEAD.COMMON.NO.FEAD,
+        message: MESSAGES.FEED.COMMON.NO.FEED,
       });
     }
     return res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
-      message: MESSAGES.FEAD.COMMON.SUCCEED.GET,
+      message: MESSAGES.FEED.COMMON.SUCCEED.GET,
       data: feed,
     });
   } catch (error) {
@@ -122,7 +122,7 @@ feedsRouter.get('/:feedId', async (req, res, next) => {
 feedsRouter.patch(
   '/:feedId',
   requireAccessToken,
-  feadUpdateValidator,
+  feedUpdateValidator,
   async (req, res, next) => {
     try {
       const { userId } = req.user;
@@ -131,7 +131,7 @@ feedsRouter.patch(
       if (!title && !content && !feed_img_url) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           status: HTTP_STATUS.BAD_REQUEST,
-          message: MESSAGES.FEAD.COMMON.REQUIRED.UPDATE,
+          message: MESSAGES.FEED.COMMON.REQUIRED.UPDATE,
         });
       }
       const { nickName } = await prisma.user.findFirst({
@@ -150,7 +150,7 @@ feedsRouter.patch(
       if (!feed) {
         return res.status(HTTP_STATUS.NOT_FOUND).json({
           status: HTTP_STATUS.NOT_FOUND,
-          message: MESSAGES.FEAD.COMMON.NO.FEAD,
+          message: MESSAGES.FEED.COMMON.NO.FEED,
         });
       }
 
@@ -178,7 +178,7 @@ feedsRouter.patch(
       });
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
-        message: MESSAGES.FEAD.COMMON.SUCCEED.UPDATED,
+        message: MESSAGES.FEED.COMMON.SUCCEED.UPDATED,
         data: updatedFeed,
       });
     } catch (error) {
@@ -202,7 +202,7 @@ feedsRouter.delete('/:feedId', requireAccessToken, async (req, res, next) => {
     if (!feed) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({
         status: HTTP_STATUS.NOT_FOUND,
-        message: MESSAGES.FEAD.COMMON.NO.FEAD,
+        message: MESSAGES.FEED.COMMON.NO.FEED,
       });
     }
     await prisma.feed.delete({
@@ -212,7 +212,7 @@ feedsRouter.delete('/:feedId', requireAccessToken, async (req, res, next) => {
     });
     return res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
-      message: MESSAGES.FEAD.COMMON.SUCCEED.DELETED,
+      message: MESSAGES.FEED.COMMON.SUCCEED.DELETED,
       deletedFeedId: +feedId,
     });
   } catch (error) {
