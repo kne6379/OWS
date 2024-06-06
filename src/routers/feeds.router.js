@@ -6,6 +6,7 @@ import { requireAccessToken } from '../middlewares/require-access-token.middlewa
 import { feedCreateValidator } from '../middlewares/validators/feed-create-validator.middleware.js';
 import { feedUpdateValidator } from '../middlewares/validators/feed-update-validator.middleware.js';
 import { commentRouter } from './comments.router.js';
+import { likeRouter } from './like.router.js';
 
 const feedsRouter = express.Router();
 
@@ -96,6 +97,7 @@ feedsRouter.get('/:feedId', async (req, res, next) => {
         title: true,
         content: true,
         feed_img_url: true,
+        likedUsersId: true,
         createdAt: true,
         updatedAt: true,
         comment: true,

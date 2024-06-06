@@ -32,6 +32,8 @@ likeRouter.post(
       const userArr = userData.likedFeedsId;
       const feedArr = feedData.likedUsersId;
 
+      const isLiked = JSON.parse(userArr)
+
       const changedUser = likePost(userArr, feedId);
       const changedFeed = likePost(feedArr, userId);
 
@@ -53,21 +55,85 @@ likeRouter.post(
         },
       });
 
-      return res.status(HTTP_STATUS.OK).json({
-        message: '처리 되었습니다',
-        data: { userId, feedId },
-      });
+      const afterLiked = JSON.parse(changedUser)
+      const likedNumber = afterLiked.length
+
+      if(isLiked.length > afterLiked.length){
+        return res.status(HTTP_STATUS.OK).json({
+            message: '좋아요 취소 되었습니다',
+        })
+      }
+      else{
+        return res.status(HTTP_STATUS.OK).json({
+            message: '좋아요 처리 되었습니다',
+            data: { likedNumber },
+          });
+      }
+
+      
     } catch (error) {
       next(error);
     }
   },
 );
 
-likeRouter.post('/commentlike', requireAccessToken, async (req, res, next) => {
+likeRouter.post('/:feedId/comments/:commentId/commentlike', requireAccessToken, async (req, res, next) => {
   try {
-    const user = req.user;
+    const { userId } = req.user;
+    const commentId = req.params.commentId;
+    
+    console.log(req.params)
+    console.log(req.params.commentId)
+    console.log(commentId)
+    console.log(userId)
 
-    const commentId = req.params;
+      const userData = await prisma.user.findUnique({
+        where: { userId: userId },
+      });
+      const commentData = await prisma.comment.findUnique({
+        where: { commentId: +commentId },
+      });
+      const userArr = userData.likedCommentsId;
+      const commentArr = commentData.likedUsersId;
+
+      const isLiked = JSON.parse(userArr)
+
+      const changedUser = likePost(userArr, commentId);
+      const changedComment = likePost(commentArr, userId);
+
+      await prisma.user.update({
+        where: {
+          userId: userId,
+        },
+        data: {
+          likedCommentsId: changedUser,
+        },
+      });
+
+      await prisma.comment.update({
+        where: {
+          commentId: +commentId,
+        },
+        data: {
+          likedUsersId: changedComment,
+        },
+      });
+
+      const afterLiked = JSON.parse(changedUser)
+      const likedNumber = afterLiked.length
+
+      if(isLiked.length > afterLiked.length){
+        return res.status(HTTP_STATUS.OK).json({
+            message: '좋아요 취소 되었습니다',
+        })
+      }
+      else{
+        return res.status(HTTP_STATUS.OK).json({
+            message: '좋아요 처리 되었습니다',
+            data: { likedNumber },
+          });
+      }
+
   } catch (error) {
     next(error);
   }
