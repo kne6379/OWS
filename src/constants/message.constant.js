@@ -80,10 +80,12 @@ export const MESSAGES = {
     UPDATE: {
       SUCCEED: '프로필 정보 수정에 성공하였습니다.',
     },
+    LOG: {
+      READ: '프로필 수정 로그 조회에 성공하였습니다.',
+    },
     PASSWORD: {
       UPDATE: {
         REQUIRED: '변경할 비밀번호를 입력해 주세요.',
-
         SUCCEED: '패스워드 변경에 성공하였습니다.',
       },
     },
