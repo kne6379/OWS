@@ -66,9 +66,6 @@ commentRouter.get('/', async (req, res, next) => {
       orderBy: {
         createdAt: sort,
       },
-      // include: {
-      //   user: true,
-      // },
     });
 
     if (!data.length) {
@@ -107,7 +104,6 @@ commentRouter.patch(
     try {
       const user = req.user;
       const userId = user.userId;
-      // const { feedId } = req.params;
       const { commentId } = req.params;
       const { comment } = req.body;
 
@@ -155,7 +151,6 @@ commentRouter.delete(
     try {
       const user = req.user;
       const userId = user.userId;
-      // const { feedId } = req.params;
       const { commentId } = req.params;
 
       let existedComment = await prisma.comment.findUnique({
