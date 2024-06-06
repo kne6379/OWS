@@ -72,7 +72,9 @@ feedsRouter.get('/', async (req, res, next) => {
       feed_img_url: true,
       updatedAt: true,
     },
-    orderBy: { updatedAt: orderBy },
+    orderBy: {
+      updatedAt: orderBy,
+    },
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -80,6 +82,28 @@ feedsRouter.get('/', async (req, res, next) => {
     message: MESSAGES.FEED.COMMON.SUCCEED.GET_ALL,
     data: feeds,
   });
+});
+
+//게시물 팔로우 우선 조회 API
+
+feedsRouter.get('/follow', requireAccessToken, async (req, res, next) => {
+  try {
+    const user = req.user;
+    const feeds = await prisma.feed.findMany({
+      where: {
+        user: {
+          following: {
+            some: {
+              followedbyid: user.userId,
+            },
+          },
+        },
+      },
+    });
+    return res.status(HTTP_STATUS.OK).json({ feeds });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // 게시물 상세 조회 API
