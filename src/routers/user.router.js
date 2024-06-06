@@ -149,4 +149,26 @@ userRouter.patch(
   },
 );
 
+userRouter.get('/payload/log', requireAccessToken, async (req, res, next) => {
+  const user = req.user;
+  const userLog = await prisma.profile.findUnique({
+    where: {
+      userId: user.userId,
+    },
+    include: {
+      log: {
+        orderBy: {
+          changedAt: 'desc',
+        },
+      },
+    },
+  });
+
+  return res.status(HTTP_STATUS.OK).json({
+    status: res.statusCode,
+    message: MESSAGES.USRES.READ.SUCCEED,
+    userLog,
+  });
+});
+
 export { userRouter };

@@ -59,7 +59,7 @@ model Feed {
   feedId       Int      @id @default(autoincrement()) @map("feed_id")
   userId       Int      @map("user_id")
   title        String   @map("title")
-  feed_img_url String   @map("feed_img_url")
+  feed_img_url String?   @map("feed_img_url")
   nickName     String   @map("nick_name")
   content      String   @map("content") @db.Text
   likedUsersId String?  @default("[]") @map("liked_users_id")
