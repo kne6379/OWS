@@ -10,7 +10,8 @@ export const MESSAGES = {
       },
       PASSWORD: {
         REQUIRED: '비밀번호를 입력해 주세요.',
-        MIN_LENGTH: '비밀번호는 6자리 이상이어야 합니다.',
+        LENGTH: '비밀번호를 6자리 이상, 12자리 이하로 설정해주세요.',
+        NO_STRING: '비밀번호는 문자열로 입력해야합니다.',
       },
       REPEAT_PASSWORD: {
         REQUIRED: '비밀번호 확인을 입력해 주세요.',
@@ -18,6 +19,38 @@ export const MESSAGES = {
       },
       NICKNAME: {
         REQUIRED: '별명을 입력해주세요.',
+        NO_STRING: '별명은 문자열로 입력해야합니다.',
+      },
+      INTRODUCE: {
+        NO_STRING: '자기소개는 문자열로 입력해야합니다.',
+      },
+      MAX_WEIGHT: {
+        NO_NUMBER: '3대 중량을 정수로 입력해주세요.',
+      },
+      WEIGHT: {
+        NO_NUMBER: '본인의 몸무게를 숫자로 입력해주세요.',
+        PRECISION: '몸무게는 소수점 첫번째 자리까지만 입력해주세요.',
+      },
+      HEIGHT: {
+        NO_NUMBER: '본인의 키를 숫자로 입력해주세요.',
+        PRECISION: '키는 소수점 첫번째 자리까지만 입력해주세요.',
+      },
+      FAT: {
+        NO_NUMBER: '본인의 체지방률을 숫자로 입력해주세요.',
+        PRECISION: '체지방률은 소수점 첫번째 자리까지만 입력해주세요.',
+      },
+      METABOLIC: {
+        NO_NUMBER: '기초대사량을 정수로 입력해주세요.',
+      },
+      MUSCLEWEIGHT: {
+        NO_NUMBER: '골격근량을 숫자로 입력해주세요.',
+        PRECISION: '골격근량은 소수점 첫번째 자리까지만 입력해주세요.',
+      },
+      PROFILE_IMG_URL: {
+        NO_STRING: '프로필 URL을 문자열로 입력해주세요.',
+      },
+      SHOWLOG: {
+        NO_BOOLEAN: '프로필 공개여부를 true, false로 작성해주세요.',
       },
     },
     JWT: {
@@ -33,16 +66,26 @@ export const MESSAGES = {
     SIGN_IN: {
       SUCCEED: '로그인에 성공했습니다.',
       UNAUTHORIZED: '인증에 실패했습니다',
-      TOKEN: '토근 재발급에 성공했습니다.'
+      TOKEN: '토근 재발급에 성공했습니다.',
     },
-    SIGN_OUT:{
-      SUCCEED: '로그아웃에 성공했습니다.'
+    SIGN_OUT: {
+      SUCCEED: '로그아웃에 성공했습니다.',
     },
   },
 
   USRES: {
     READ: {
       SUCCEED: '프로필 정보 조회에 성공하였습니다.',
+    },
+    UPDATE: {
+      SUCCEED: '프로필 정보 수정에 성공하였습니다.',
+    },
+    PASSWORD: {
+      UPDATE: {
+        REQUIRED: '변경할 비밀번호를 입력해 주세요.',
+
+        SUCCEED: '패스워드 변경에 성공하였습니다.',
+      },
     },
   },
 
