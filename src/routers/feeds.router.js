@@ -5,6 +5,7 @@ import { prisma } from '../utils/prisma.util.js';
 import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
 import { feadCreateValidator } from '../middlewares/validators/fead-create-validator.middleware.js';
 import { feadUpdateValidator } from '../middlewares/validators/fead-update-validator.middleware.js';
+import { commentRouter } from './comments.router.js';
 
 const feedsRouter = express.Router();
 
@@ -186,38 +187,37 @@ feedsRouter.patch(
 
 // 게시물 삭제 API
 
-feedsRouter.delete(
-  '/:feedId',
-  requireAccessToken,
-  async (req, res, next) => {
-    try {
-      const { userId } = req.user;
-      const { feedId } = req.params;
-      const feed = await prisma.feed.findUnique({
-        where: {
-          userId,
-          feedId: +feedId,
-        },
+feedsRouter.delete('/:feedId', requireAccessToken, async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const { feedId } = req.params;
+    const feed = await prisma.feed.findUnique({
+      where: {
+        userId,
+        feedId: +feedId,
+      },
+    });
+    if (!feed) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: MESSAGES.FEAD.COMMON.NO.FEAD,
       });
-      if (!feed) {
-        return res.status(HTTP_STATUS.NOT_FOUND).json({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: MESSAGES.FEAD.COMMON.NO.FEAD,
-        });
-      }
-      await prisma.feed.delete({
-        where: {
-          feedId: +feedId,
-        },
-      });
-      return res.status(HTTP_STATUS.OK).json({
-        status: HTTP_STATUS.OK,
-        message: MESSAGES.FEAD.COMMON.SUCCEED.DELETED,
-        deletedFeedId: +feedId,
-      });
-    } catch (error) {
-      next(error);
     }
-  },
-);
+    await prisma.feed.delete({
+      where: {
+        feedId: +feedId,
+      },
+    });
+    return res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.FEAD.COMMON.SUCCEED.DELETED,
+      deletedFeedId: +feedId,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+feedsRouter.use('/:feedId/comments', commentRouter);
+
 export default feedsRouter;
