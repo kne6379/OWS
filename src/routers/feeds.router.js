@@ -70,6 +70,7 @@ feedsRouter.get('/', async (req, res, next) => {
       content: true,
       feed_img_url: true,
       updatedAt: true,
+      comment: true,
     },
     orderBy: { updatedAt: orderBy },
   });
@@ -97,6 +98,7 @@ feedsRouter.get('/:feedId', async (req, res, next) => {
         feed_img_url: true,
         createdAt: true,
         updatedAt: true,
+        comment: true,
       },
     });
     if (!feed) {
