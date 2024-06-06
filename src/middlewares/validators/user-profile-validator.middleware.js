@@ -4,10 +4,6 @@ import { MESSAGES } from '../../constants/message.constant.js';
 export const profileUpdateValidator = async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
-      nickName: Joi.string().required().messages({
-        'string.base': MESSAGES.AUTH.COMMON.NICKNAME.NO_STRING,
-        'any.required': MESSAGES.AUTH.COMMON.NICKNAME.REQUIRED,
-      }),
       introduce: Joi.string().messages({
         'string.base': MESSAGES.AUTH.COMMON.INTRODUCE.NO_STRING,
       }),

@@ -131,6 +131,7 @@ authRouter.post('/token', requireRefreshToken, async (req, res, next) => {
   }
 });
 
+//로그아웃 API
 authRouter.post('/sign-out', requireRefreshToken, async (req, res, next) => {
   try {
     const user = req.user;
