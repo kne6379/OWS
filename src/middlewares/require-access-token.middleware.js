@@ -55,6 +55,12 @@ export const requireAccessToken = async (req, res, next) => {
       });
     }
 
+    if (!user.refreshToken) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        message: MESSAGES.AUTH.JWT.EXPIRED,
+      });
+    }
+
     req.user = user;
     next();
   } catch (error) {
