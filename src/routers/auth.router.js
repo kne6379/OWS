@@ -76,9 +76,23 @@ authRouter.post('/sign-up', signupValidator, async (req, res, next) => {
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted },
     );
+    const data = {
+      userId: userData.userId,
+      email: userData.email,
+      nickName: userData.nickName,
+      introduce: profileData.introduce,
+      profile_img_url: profileData.profile_img_url,
+      maxweight: profileData.maxweight,
+      weight: profileData.weight,
+      height: profileData.height,
+      muscleweight: profileData.muscleweight,
+      fat: profileData.fat,
+      metabolic: profileData.metabolic,
+      createdAt: userData.createdAt,
+    };
     return res.status(HTTP_STATUS.CREATED).json({
       message: MESSAGES.AUTH.SIGN_UP.SUCCEED,
-      userData,
+      data,
     });
   } catch (error) {
     next(error);
