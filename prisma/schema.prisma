@@ -15,14 +15,16 @@ datasource db {
 }
 
 model User {
-  userId       Int      @id @default(autoincrement()) @map("user_id")
-  email        String   @unique @map("email")
-  password     String   @map("password")
-  nickName     String   @unique @map("nick_name")
-  role         UserRole @default(COMMON) @map("role")
-  refreshToken String?   @map("refresh_token")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  userId          Int      @id @default(autoincrement()) @map("user_id")
+  email           String   @unique @map("email")
+  password        String   @map("password")
+  nickName        String   @unique @map("nick_name")
+  role            UserRole @default(COMMON) @map("role")
+  refreshToken    String?  @map("refresh_token")
+  likedFeedsId    String?  @default("[]") @map("liked_feeds_id")
+  likedCommentsId String?  @default("[]") @map("liked_comments_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   profile Profile?
   feed    Feed[]
@@ -60,6 +62,7 @@ model Feed {
   feed_img_url String   @map("feed_img_url")
   nickName     String   @map("nick_name")
   content      String   @map("content") @db.Text
+  likedUsersId String?  @default("[]") @map("liked_users_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -70,12 +73,13 @@ model Feed {
 }
 
 model Comment {
-  commentId Int      @id @default(autoincrement()) @map("comment_id")
-  feedId    Int      @map("feed_id")
-  userId    Int      @map("user_id")
-  comment   String   @map("comment") @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  commentId    Int      @id @default(autoincrement()) @map("comment_id")
+  feedId       Int      @map("feed_id")
+  userId       Int      @map("user_id")
+  comment      String   @map("comment") @db.Text
+  likedUsersId String?  @default("[]") @map("liked_users_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [userId])
   feed Feed @relation(fields: [feedId], references: [feedId])
