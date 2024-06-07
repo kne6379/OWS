@@ -2,7 +2,7 @@
 
 ## 🏋️‍♀️ OWS project
 
-- [배포 웹사이트 링크](추가 예정)
+- [배포 웹사이트 링크](http://stephenoeul.shop:3000/api/feeds)
 - [API 명세서 링크](https://www.notion.so/teamsparta/17115dc94d6e4b5186b7a17f8f85fb39?v=70bd88b8f3094b91a9634e81c39cc813)
 - [ERD 링크](https://drawsql.app/teams/ows-2/diagrams/newsfeed)
 
@@ -63,6 +63,30 @@
   </div>
 </details>
 
+<details>
+  <summary>5. 팔로우 기능</summary>
+  <div markdown="5">
+    <ul>
+      <li>팔로우 : 로그인한 사용자는 다른 사용자를 팔로우할 수 있습니다.</li>
+      <li>언팔로우 : 로그인한 사용자는 다른 사용자를 언팔로우할 수 있습니다..</li>
+      <li>팔로잉, 팔로워 확인 :로그인한 사용자는 본인의 팔로잉, 팔로워를 확인할 수 있습니다.</li>
+      <li>팔로잉하는 유저들의 글 보기 : 로그인한 사용자는 팔로잉하는 유저들의 글을 우선적으로 확인할 수 있습니다.</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>6. 좋아요 기능</summary>
+  <div markdown="6">
+    <ul>
+      <li>게시물 좋아요 : 로그인한 사용자는 게시물에 '좋아요'를 표시할 수 있습니다.</li>
+      <li>게시물 좋아요 해제 : 로그인한 사용자는 게시물에 '좋아요'를 해제할 수 있습니다.</li>
+      <li>댓글 좋아요 : 로그인한 사용자는 댓글에 '좋아요'를 표시할 수 있습니다.</li>
+      <li>댓글 좋아요 해제 : 로그인한 사용자는 댓글에 '좋아요'를 해제할 수 있습니다.</li>
+    </ul>
+  </div>
+</details>
+
 ## 📜 프로젝트 기획 및 설계
 
 ### Minutes of meeting
@@ -70,13 +94,7 @@
 - [팀 프로젝트 S.A.](https://teamsparta.notion.site/OWS-eb3f0d04b66d41cda9bab74c22c23410)
 - [팀 프로젝트 회의록](https://teamsparta.notion.site/1945327151094e7391b931d911c8615a?v=fc0347d07df74071941e0c16943cfbf8)
 
-### Wireframe
-
-![Wireframe](추가 예정)
-
-### Code Convention
-
-[Code Convention](https://teamsparta.notion.site/Code-Convention-5a60e68b0c3149c89c870984bfd44a1f)
+### [Code Convention](https://teamsparta.notion.site/Code-Convention-5a60e68b0c3149c89c870984bfd44a1f)
 
 ### Github Rules
 
@@ -118,7 +136,9 @@
 ┃ ┣ 📜auth.router.js
 ┃ ┣ 📜comments.router.js
 ┃ ┣ 📜feeds.router.js
+┃ ┣ 📜follow.router.js
 ┃ ┣ 📜index.js
+┃ ┣ 📜like.router.js
 ┃ ┗ 📜user.router.js
 ┣ 📂utils
 ┃ ┃ ┗ 📜prisma.util.js
