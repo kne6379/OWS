@@ -32,7 +32,7 @@ likeRouter.post(
       const userArr = userData.likedFeedsId;
       const feedArr = feedData.likedUsersId;
 
-      const isLiked = JSON.parse(userArr)
+      const isLiked = JSON.parse(userArr);
 
       const changedUser = likePost(userArr, feedId);
       const changedFeed = likePost(feedArr, userId);
@@ -55,38 +55,32 @@ likeRouter.post(
         },
       });
 
-      const afterLiked = JSON.parse(changedUser)
-      const likedNumber = afterLiked.length
+      const afterLiked = JSON.parse(changedUser);
+      const likedNumber = afterLiked.length;
 
-      if(isLiked.length > afterLiked.length){
+      if (isLiked.length > afterLiked.length) {
         return res.status(HTTP_STATUS.OK).json({
-            message: '좋아요 취소 되었습니다',
-        })
-      }
-      else{
+          message: '좋아요 취소 되었습니다',
+        });
+      } else {
         return res.status(HTTP_STATUS.OK).json({
-            message: '좋아요 처리 되었습니다',
-            data: { likedNumber },
-          });
+          message: '좋아요 처리 되었습니다',
+          data: { likedNumber },
+        });
       }
-
-      
     } catch (error) {
       next(error);
     }
   },
 );
 
-likeRouter.post('/:feedId/comments/:commentId/commentlike', requireAccessToken, async (req, res, next) => {
-  try {
-    const { userId } = req.user;
-    const commentId = req.params.commentId;
-    
-    console.log(req.params)
-    console.log(req.params.commentId)
-    console.log(commentId)
-    console.log(userId)
-
+likeRouter.post(
+  '/:feedId/comments/:commentId/commentlike',
+  requireAccessToken,
+  async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const commentId = req.params.commentId;
       const userData = await prisma.user.findUnique({
         where: { userId: userId },
       });
@@ -96,7 +90,7 @@ likeRouter.post('/:feedId/comments/:commentId/commentlike', requireAccessToken, 
       const userArr = userData.likedCommentsId;
       const commentArr = commentData.likedUsersId;
 
-      const isLiked = JSON.parse(userArr)
+      const isLiked = JSON.parse(userArr);
 
       const changedUser = likePost(userArr, commentId);
       const changedComment = likePost(commentArr, userId);
@@ -119,24 +113,23 @@ likeRouter.post('/:feedId/comments/:commentId/commentlike', requireAccessToken, 
         },
       });
 
-      const afterLiked = JSON.parse(changedUser)
-      const likedNumber = afterLiked.length
+      const afterLiked = JSON.parse(changedUser);
+      const likedNumber = afterLiked.length;
 
-      if(isLiked.length > afterLiked.length){
+      if (isLiked.length > afterLiked.length) {
         return res.status(HTTP_STATUS.OK).json({
-            message: '좋아요 취소 되었습니다',
-        })
-      }
-      else{
+          message: '좋아요 취소 되었습니다',
+        });
+      } else {
         return res.status(HTTP_STATUS.OK).json({
-            message: '좋아요 처리 되었습니다',
-            data: { likedNumber },
-          });
+          message: '좋아요 처리 되었습니다',
+          data: { likedNumber },
+        });
       }
-
-  } catch (error) {
-    next(error);
-  }
-});
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 export { likeRouter };

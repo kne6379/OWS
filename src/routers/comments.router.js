@@ -82,6 +82,7 @@ commentRouter.get('/', async (req, res, next) => {
         commentId: comment.commentId,
         content: comment.comment,
         updatedAt: comment.updatedAt,
+        likedUsersId: comment.likedUsersId,
       };
     });
 

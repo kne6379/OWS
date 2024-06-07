@@ -55,7 +55,7 @@ export const signupValidator = async (req, res, next) => {
         'number.base': MESSAGES.AUTH.COMMON.MUSCLEWEIGHT.NO_NUMBER,
         'number.precision': MESSAGES.AUTH.COMMON.MUSCLEWEIGHT.PRECISION,
       }),
-      profile_img_url: Joi.number().precision(1).messages({
+      profile_img_url: Joi.string().messages({
         'string.base': MESSAGES.AUTH.COMMON.PROFILE_IMG_URL,
       }),
       showLog: Joi.boolean().messages({
