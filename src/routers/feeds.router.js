@@ -218,11 +218,12 @@ feedsRouter.delete('/:feedId', requireAccessToken, async (req, res, next) => {
   try {
     const { userId } = req.user;
     const { feedId } = req.params;
+    const whereCondition = { feedId: +feedId };
+    if (req.user.role == 'COMMON') {
+      whereCondition.userId = userId;
+    }
     const feed = await prisma.feed.findUnique({
-      where: {
-        userId,
-        feedId: +feedId,
-      },
+      where: whereCondition,
     });
     if (!feed) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({

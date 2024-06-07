@@ -85,14 +85,20 @@ followRouter.get('/', requireAccessToken, async (req, res, next) => {
       where: {
         userId: user.userId,
       },
-      include: {
+      select: {
+        nickName: true,
+        userId: true,
         followedby: true,
         following: true,
       },
     });
     return res
       .status(HTTP_STATUS.OK)
-      .json({ status: res.statusCode, followList });
+      .json({
+        status: res.statusCode,
+        message: '팔로우 목록 조회에 성공하였습니다.',
+        followList,
+      });
   } catch (error) {
     next(error);
   }
